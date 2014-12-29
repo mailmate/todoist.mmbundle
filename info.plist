@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>zz-ohaqyrf@sereba.pbz</string>
+	<key>contactName</key>
+	<string>Benny Kjær Nielsen</string>
+	<key>description</key>
+	<string>Integration with task manager Todoist.</string>
+	<key>name</key>
+	<string>Todoist</string>
+	<key>uuid</key>
+	<string>CD0D677B-9561-4F9F-BCBE-E7EC97BF8278</string>
+</dict>
+</plist>
