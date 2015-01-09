@@ -1,0 +1,5 @@
+{
+	name          = 'Setup API Token...';
+	command       = '#!/bin/bash\n"${MM_BUNDLE_SUPPORT}/bin/setup_token"';
+	uuid          = '15FCD055-0403-4400-B21C-CD3696F7D22C';
+}

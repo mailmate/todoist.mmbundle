@@ -5,8 +5,9 @@ require 'cgi'
 
 token = `defaults read com.freron.MailMate MmTodoistAPIToken`
 if $?.exitstatus != 0 || token.empty?
-  # FIXME: Warn the user and ask for Todoist API token. Save it in MmTodoistAPIToken.
-  #  Ideally, this should not be needed if using the todoist URL scheme.
+  token = `#{ENV['MM_BUNDLE_SUPPORT']}/bin/setup_token`
+  exit if token == ""
+  `defaults write com.freron.MailMate MmTodoistAPIToken -string #{token}`
 end
 
 subject = CGI::escape(ENV['MM_SUBJECT'] + " " + "\nLink: message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e").gsub('+', '%20') 
