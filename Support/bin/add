@@ -3,17 +3,17 @@
 
 require 'cgi'
 
-token = `defaults read com.freron.MailMate MmTodoistAPIToken`
-if $?.exitstatus != 0 || token.empty?
-  token = `#{ENV['MM_BUNDLE_SUPPORT']}/bin/setup_token`
-  exit if token == ""
-  `defaults write com.freron.MailMate MmTodoistAPIToken -string #{token}`
-end
-
 subject = CGI::escape(ENV['MM_SUBJECT'] + " " + "\nLink: message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e").gsub('+', '%20') 
 
 note = $stdin.read
 if !note.empty?
+  token = `defaults read com.freron.MailMate MmTodoistAPIToken`
+  if $?.exitstatus != 0 || token.empty?
+    token = `"#{ENV['MM_BUNDLE_SUPPORT']}/bin/setup_token"`
+    exit if token == ""
+    `defaults write com.freron.MailMate MmTodoistAPIToken -string #{token}`
+  end
+
   note = CGI::escape(note)
   # Using the web API (to be able to add a note which does not seem to be possible using the URL scheme)
   system("curl", "--silent", "https://api.todoist.com/API/addItem?content=#{subject}&priority=1&note=#{note}&date_string=today&token=#{token}")
