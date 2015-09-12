@@ -11,12 +11,13 @@ if !note.empty?
   if $?.exitstatus != 0 || token.empty?
     token = `"#{ENV['MM_BUNDLE_SUPPORT']}/bin/setup_token"`
     exit if token == ""
-    `defaults write com.freron.MailMate MmTodoistAPIToken -string #{token}`
   end
 
-  note = CGI::escape(note)
+  token.strip!
+  note = CGI::escape(note).gsub('+', '%20')
   # Using the web API (to be able to add a note which does not seem to be possible using the URL scheme)
-  system("curl", "--silent", "https://api.todoist.com/API/addItem?content=#{subject}&priority=1&note=#{note}&date_string=today&token=#{token}")
+  url = "https://api.todoist.com/API/addItem?content=#{subject}&priority=1&note=#{note}&date_string=today&token=#{token}"
+  system("curl", "--silent", url)
 else
   # Using the URL scheme since that provides us with the Quick Add GUI of Todoist
   system("open", "todoist://addtask?content=#{subject}&note=#{note}") # The note part doesn't work...
