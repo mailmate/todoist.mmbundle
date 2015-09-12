@@ -20,5 +20,7 @@ if !note.empty?
   system("curl", "--silent", url)
 else
   # Using the URL scheme since that provides us with the Quick Add GUI of Todoist
-  system("open", "todoist://addtask?content=#{subject}&note=#{note}") # The note part doesn't work...
+  # https://developer.todoist.com/#tasks
+  note = CGI::escape(note).gsub('+', '%20')
+  system("open", "todoist://addtask?content=#{subject}&note=#{note}&date=today")
 end
