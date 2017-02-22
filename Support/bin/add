@@ -3,9 +3,9 @@
 
 require 'cgi'
 
-subject = CGI::escape(ENV['MM_SUBJECT'] + " " + "\nLink: message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e").gsub('+', '%20') 
-
+subject = ENV['MM_SUBJECT'] + " " + "\nLink: message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e"
 note = $stdin.read
+
 if !note.empty?
   token = `defaults read com.freron.MailMate MmTodoistAPIToken`
   if $?.exitstatus != 0 || token.empty?
@@ -14,13 +14,35 @@ if !note.empty?
   end
 
   token.strip!
-  note = CGI::escape(note).gsub('+', '%20')
+  # note = CGI::escape(note).gsub('+', '%20')
   # Using the web API (to be able to add a note which does not seem to be possible using the URL scheme)
-  url = "https://api.todoist.com/API/addItem?content=#{subject}&priority=1&note=#{note}&date_string=today&token=#{token}"
-  system("curl", "--silent", url)
+
+  # When/if Ruby 1.9+ can be assumed then this could be used.
+  # require 'securerandom'
+  # SecureRandom.uuid
+
+  uuid = `uuidgen`.strip!
+  temp_id = `uuidgen`.strip!
+  subject = subject.gsub('"', '\\"')
+  note = note.gsub('"', '\\"')
+  commands = "[{\"type\": \"item_add\", \"uuid\": \"#{uuid}\", \"temp_id\": \"#{temp_id}\", \"args\": {\"content\": \"#{subject}\", \"priority\": \"1\", \"note\": \"#{note}\", \"date_string\": \"today\"}}]";
+
+  require "net/https"
+  require "uri"
+
+  options = {}
+  options['token'] = token
+  options['commands'] = commands
+  uri = URI.parse("https://todoist.com/API/v7/sync")
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  request = Net::HTTP::Post.new(uri.request_uri)
+  request.set_form_data(options)
+  http.request(request) # FIXME: Should parse json response and report errors to the user.
 else
   # Using the URL scheme since that provides us with the Quick Add GUI of Todoist
   # https://developer.todoist.com/#tasks
+  subject = CGI::escape(subject).gsub('+', '%20') 
   note = CGI::escape(note).gsub('+', '%20')
   system("open", "todoist://addtask?content=#{subject}&note=#{note}&date=today")
 end
