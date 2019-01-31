@@ -43,7 +43,8 @@ if !note.empty?
 else
   # Using the URL scheme since that provides us with the Quick Add GUI of Todoist
   # https://developer.todoist.com/#tasks
-  subject = CGI::escape(subject).gsub('+', '%20') 
-  note = CGI::escape(note).gsub('+', '%20')
+  subject = CGI::escape(subject.gsub('%', '%25')).gsub('+', '%20') 
+  note = CGI::escape(note.gsub('%', '%25')).gsub('+', '%20')
+
   system("open", "todoist://addtask?content=#{subject}&note=#{note}&date=today")
 end
