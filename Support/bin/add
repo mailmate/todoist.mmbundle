@@ -46,5 +46,5 @@ else
   subject = CGI::escape(subject.gsub('%', '%25')).gsub('+', '%20') 
   note = CGI::escape(note.gsub('%', '%25')).gsub('+', '%20')
 
-  system("open", "todoist://addtask?content=#{subject}&note=#{note}&date=today")
+  system("open", "todoist://addtask?content=#{subject}&comment=#{note}&date=today")
 end
