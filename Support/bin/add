@@ -5,46 +5,14 @@ require 'cgi'
 
 # subject = ENV['MM_SUBJECT'] + " " + "\nLink: message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e"
 subject = ENV['MM_SUBJECT'] + " ([link](message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e))"
-note = $stdin.read
+comment = $stdin.read
 
-if !note.empty?
-  token = `defaults read com.freron.MailMate MmTodoistAPIToken`
-  if $?.exitstatus != 0 || token.empty?
-    token = `"#{ENV['MM_BUNDLE_SUPPORT']}/bin/setup_token"`
-    exit if token == ""
-  end
+# Using the URL scheme since that provides us with the Quick Add GUI of Todoist
+# https://developer.todoist.com/#tasks
+subject = CGI::escape(subject.gsub('%', '%25')).gsub('+', '%20') 
+comment = CGI::escape(comment.gsub('%', '%25')).gsub('+', '%20')
 
-  token.strip!
-  # note = CGI::escape(note).gsub('+', '%20')
-  # Using the web API (to be able to add a note which does not seem to be possible using the URL scheme)
+system("open", "todoist://addtask?content=#{subject}&comment=#{comment}&date=today")
 
-  # When/if Ruby 1.9+ can be assumed then this could be used.
-  # require 'securerandom'
-  # SecureRandom.uuid
-
-  uuid = `uuidgen`.strip!
-  temp_id = `uuidgen`.strip!
-  subject = subject.gsub('"', '\\"')
-  note = note.gsub('"', '\\"')
-  commands = "[{\"type\": \"item_add\", \"uuid\": \"#{uuid}\", \"temp_id\": \"#{temp_id}\", \"args\": {\"content\": \"#{subject}\", \"priority\": \"1\", \"note\": \"#{note}\", \"date_string\": \"today\"}}]";
-
-  require "net/https"
-  require "uri"
-
-  options = {}
-  options['token'] = token
-  options['commands'] = commands
-  uri = URI.parse("https://todoist.com/API/v7/sync")
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-  request = Net::HTTP::Post.new(uri.request_uri)
-  request.set_form_data(options)
-  http.request(request) # FIXME: Should parse json response and report errors to the user.
-else
-  # Using the URL scheme since that provides us with the Quick Add GUI of Todoist
-  # https://developer.todoist.com/#tasks
-  subject = CGI::escape(subject.gsub('%', '%25')).gsub('+', '%20') 
-  note = CGI::escape(note.gsub('%', '%25')).gsub('+', '%20')
-
-  system("open", "todoist://addtask?content=#{subject}&note=#{note}&date=today")
-end
+# Note: An earlier version of this script used a RESTful API to provide the “comment”. This also required an access token to be configured.
+#  If the todoist URL scheme changes in the future then it might be necessary to return to that approach.

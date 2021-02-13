@@ -1,5 +1,0 @@
-#!/bin/bash
-
-token=`defaults read com.freron.MailMate MmTodoistAPIToken`
-token=`osascript -e "text returned of (display dialog \"Please enter your Todoist API token. You can find this in the account page of your Todoist settings (website):\" with title \"Todoist API token required\" default answer \"${token}\")"`
-defaults write com.freron.MailMate MmTodoistAPIToken -string ${token}
