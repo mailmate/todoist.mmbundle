@@ -4,7 +4,7 @@
 require 'cgi'
 
 # subject = ENV['MM_SUBJECT'] + " " + "\nLink: message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e"
-subject = ENV['MM_SUBJECT'] + " (message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e (Link))"
+subject = ENV['MM_SUBJECT'] + " ([link](message://%3c" + ENV['MM_MESSAGE_ID'] + "%3e))"
 note = $stdin.read
 
 if !note.empty?
