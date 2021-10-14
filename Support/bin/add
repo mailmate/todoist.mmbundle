@@ -9,8 +9,8 @@ comment = $stdin.read
 
 # Using the URL scheme since that provides us with the Quick Add GUI of Todoist
 # https://developer.todoist.com/#tasks
-subject = CGI::escape(subject.gsub('%', '%25')).gsub('+', '%20') 
-comment = CGI::escape(comment.gsub('%', '%25')).gsub('+', '%20')
+subject = CGI::escape(subject) # .gsub('+', '%20') -- seems to no longer be necessary
+comment = CGI::escape(comment) # .gsub('+', '%20') -- seems to no longer be necessary
 
 system("open", "todoist://addtask?content=#{subject}&comment=#{comment}&date=today")
 
